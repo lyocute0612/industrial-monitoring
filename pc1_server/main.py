@@ -46,7 +46,7 @@ def main():
         kwargs={
             "data_store": data_store,
             "database": database,
-            "host": "127.0.0.1",
+            "host": "0.0.0.0",
             "port": 5000,
         },
         daemon=True,

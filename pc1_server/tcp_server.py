@@ -1,6 +1,7 @@
 import json
 import socket
 import threading
+import time
 import uuid
 from copy import deepcopy
 
@@ -13,7 +14,7 @@ from pc1_server.database import (
 )
 
 
-HOST = "127.0.0.1"
+HOST = "192.168.50.10"
 PORT = 65432
 
 
@@ -207,12 +208,19 @@ def handle_client(
     )
 
     buffer = ""
+    last_rx = time.monotonic()
+    client_socket.settimeout(2.0)
 
     try:
         while True:
-            data = client_socket.recv(
-                4096
-            )
+            try:
+                data = client_socket.recv(4096)
+            except socket.timeout:
+                if time.monotonic() - last_rx > 15.0:
+                    print("PC2 idle timeout; releasing TCP connection.")
+                    break
+                continue
+            last_rx = time.monotonic()
 
             if not data:
                 break
@@ -234,6 +242,12 @@ def handle_client(
                     message = json.loads(
                         line
                     )
+                    if not isinstance(message, dict):
+                        continue
+                    if message.get("type") == "heartbeat":
+                        with _send_lock:
+                            client_socket.sendall(b'{"type":"heartbeat_ack"}\n')
+                        continue
 
                     if (
                         message.get("type")
@@ -284,7 +298,8 @@ def handle_client(
                         f"{error}"
                     )
 
-    except ConnectionResetError:
+    except OSError as error:
+        print(f"PC2 connection closed: {error}")
         print(
             "PC2 disconnected unexpectedly."
         )
