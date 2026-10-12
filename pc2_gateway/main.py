@@ -22,6 +22,7 @@ from pc2_gateway.gateway_state import (
     GatewayState,
 )
 
+from pc2_gateway.config import load_gateway_config
 
 BAUD_CODE_TO_RATE = {
     1: 4800,
@@ -379,21 +380,31 @@ def handle_command(
 
 
 def main():
+    config = load_gateway_config()
+
+    shct3_port = config["shct3_port"]
+    soil_port = config["soil_port"]
+    baudrate = config["baudrate"]
+    reconnect_interval = config["reconnect_interval"]
+
     print("PC2 Industrial Gateway")
     print("----------------------")
-    print("Mode: REAL RS485 - COM4 + COM5 (auto-reconnect)")
+    print(f"Mode: REAL RS485 - {shct3_port} + {soil_port} (auto-reconnect)")
     print("Press Ctrl+C to stop.")
 
     state = GatewayState()
     transport_lock = threading.Lock()
     transport = None
     soil_transport = None
-    retry_after = {"COM4": 0.0, "COM5": 0.0}
-    reconnect_interval = 3.0
+    retry_after = {
+    	shct3_port: 0.0,
+    	soil_port: 0.0,
+    }
+    
 
     tcp_client = TcpClient(
-    	host="192.168.50.10",
-    	port=65432,
+    	host=config["tcp_host"],
+    	port=config["tcp_port"],
     )
 
     def safe_command_handler(message):
@@ -420,7 +431,7 @@ def main():
         if time.monotonic() < retry_after[port]:
             return None
         try:
-            connection = SerialTransport(port=port, baudrate=9600, timeout=2.0)
+            connection = SerialTransport(port=port, baudrate=baudrate, timeout=2.0)
             print(f"{port} connected.")
             return connection
         except Exception as error:
@@ -445,12 +456,12 @@ def main():
             tcp_client.maintain(safe_command_handler)
             with transport_lock:
                 if transport is None:
-                    transport = try_open("COM4")
+                    transport = try_open(shct3_port)
                 if soil_transport is None:
-                    soil_transport = try_open("COM5")
+                    soil_transport = try_open(soil_port)
 
                 sensor_errors = []
-                # No COM4 means skip both SHTC3 sensors; COM5 can still work.
+                # Without SHCT3 transport, skip sensors 1 and 2; Soil can still work.
                 if transport is not None:
                     results = poll_once(
                         transport,
@@ -461,7 +472,7 @@ def main():
                         ),
                     )
                 elif soil_transport is not None:
-                    # Read Soil independently while COM4 is unavailable.
+                    # Read Soil independently while SHCT3 transport is unavailable.
                     from pc2_gateway.polling import read_soil_sensor
                     results = []
                     try:
@@ -481,10 +492,10 @@ def main():
                     type(error).__name__ in ("SerialException", "SerialTimeoutException")
                 }
                 if transport is not None and serial_error_ids.intersection((1, 2)):
-                    disconnect("COM4", transport)
+                    disconnect(shct3_port, transport)
                     transport = None
                 if soil_transport is not None and 3 in serial_error_ids:
-                    disconnect("COM5", soil_transport)
+                    disconnect(soil_port, soil_transport)
                     soil_transport = None
 
             print("\n" + "=" * 50)
@@ -495,9 +506,9 @@ def main():
                     f"{type(error).__name__}: {error}"
                 )
             if transport is None:
-                print("WARNING: COM4 offline (Sensor 1 and Sensor 2).")
+                print(f"WARNING: {shct3_port} offline (Sensor 1 and Sensor 2).")
             if soil_transport is None:
-                print("WARNING: COM5 offline (Sensor 3).")
+                print(f"WARNING: {soil_port} offline (Sensor 3).")
             if not results:
                 print("WARNING: No sensor readings in this cycle; will retry.")
 
@@ -521,10 +532,10 @@ def main():
         tcp_client.close()
         if transport is not None:
             transport.close()
-            print("COM4 closed.")
+            print(f"{shct3_port} closed.")
         if soil_transport is not None:
             soil_transport.close()
-            print("COM5 closed.")
+            print(f"{soil_port} closed.")
 
 
 if __name__ == "__main__":

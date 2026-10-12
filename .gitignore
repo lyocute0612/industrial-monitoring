@@ -27,3 +27,9 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Machine-specific gateway configuration
+/config/gateway.json
+
+# Local source backups
+*.before_config

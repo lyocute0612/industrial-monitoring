@@ -1,0 +1,8 @@
+{
+  "shct3_port": "COM4",
+  "soil_port": "COM5",
+  "baudrate": 9600,
+  "tcp_host": "192.168.50.10",
+  "tcp_port": 65432,
+  "reconnect_interval": 3.0
+}
