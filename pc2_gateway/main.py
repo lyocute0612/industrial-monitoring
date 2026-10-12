@@ -381,14 +381,14 @@ def handle_command(
 def main():
     print("PC2 Industrial Gateway")
     print("----------------------")
-    print("Mode: REAL RS485 - COM6 + COM7 (auto-reconnect)")
+    print("Mode: REAL RS485 - COM4 + COM5 (auto-reconnect)")
     print("Press Ctrl+C to stop.")
 
     state = GatewayState()
     transport_lock = threading.Lock()
     transport = None
     soil_transport = None
-    retry_after = {"COM6": 0.0, "COM7": 0.0}
+    retry_after = {"COM4": 0.0, "COM5": 0.0}
     reconnect_interval = 3.0
 
     tcp_client = TcpClient(
@@ -445,12 +445,12 @@ def main():
             tcp_client.maintain(safe_command_handler)
             with transport_lock:
                 if transport is None:
-                    transport = try_open("COM6")
+                    transport = try_open("COM4")
                 if soil_transport is None:
-                    soil_transport = try_open("COM7")
+                    soil_transport = try_open("COM5")
 
                 sensor_errors = []
-                # No COM6 means skip both SHTC3 sensors; COM7 can still work.
+                # No COM4 means skip both SHTC3 sensors; COM5 can still work.
                 if transport is not None:
                     results = poll_once(
                         transport,
@@ -461,7 +461,7 @@ def main():
                         ),
                     )
                 elif soil_transport is not None:
-                    # Read Soil independently while COM6 is unavailable.
+                    # Read Soil independently while COM4 is unavailable.
                     from pc2_gateway.polling import read_soil_sensor
                     results = []
                     try:
@@ -481,10 +481,10 @@ def main():
                     type(error).__name__ in ("SerialException", "SerialTimeoutException")
                 }
                 if transport is not None and serial_error_ids.intersection((1, 2)):
-                    disconnect("COM6", transport)
+                    disconnect("COM4", transport)
                     transport = None
                 if soil_transport is not None and 3 in serial_error_ids:
-                    disconnect("COM7", soil_transport)
+                    disconnect("COM5", soil_transport)
                     soil_transport = None
 
             print("\n" + "=" * 50)
@@ -495,9 +495,9 @@ def main():
                     f"{type(error).__name__}: {error}"
                 )
             if transport is None:
-                print("WARNING: COM6 offline (Sensor 1 and Sensor 2).")
+                print("WARNING: COM4 offline (Sensor 1 and Sensor 2).")
             if soil_transport is None:
-                print("WARNING: COM7 offline (Sensor 3).")
+                print("WARNING: COM5 offline (Sensor 3).")
             if not results:
                 print("WARNING: No sensor readings in this cycle; will retry.")
 
@@ -521,10 +521,10 @@ def main():
         tcp_client.close()
         if transport is not None:
             transport.close()
-            print("COM6 closed.")
+            print("COM4 closed.")
         if soil_transport is not None:
             soil_transport.close()
-            print("COM7 closed.")
+            print("COM5 closed.")
 
 
 if __name__ == "__main__":
