@@ -19,6 +19,7 @@ def test_poll_once_returns_three_sensors():
     results = poll_once(
         simulator,
         state,
+	soil_transport=simulator,
     )
 
     assert len(results) == 3
@@ -63,6 +64,7 @@ def test_poll_soil_values():
     results = poll_once(
         simulator,
         state,
+	soil_transport=simulator,
     )
 
     soil = results[2]
