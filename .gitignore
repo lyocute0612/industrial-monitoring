@@ -1,0 +1,29 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Backup files
+*.bak
+
+# Local settings and secrets
+.env
+.env.*
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

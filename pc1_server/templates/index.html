@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>Industrial Monitoring Dashboard</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+</head>
+<body>
+    <main class="page-shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">PC1 WEB MONITORING</p>
+                <h1>Industrial Monitoring Dashboard</h1>
+                <p class="subtitle">
+                    Realtime data from PC2 Gateway
+                </p>
+            </div>
+
+            <div class="system-status">
+                <span
+                    id="connection-dot"
+                    class="status-dot offline"
+                ></span>
+                <div>
+                    <div class="status-label">
+                        PC2 Connection
+                    </div>
+                    <div
+                        id="connection-status"
+                        class="status-value"
+                    >
+                        DISCONNECTED
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <section class="meta-row">
+            <div>
+                <span class="meta-label">
+                    Last refresh
+                </span>
+                <span id="last-refresh">
+                    --
+                </span>
+            </div>
+
+            <div>
+                <span class="meta-label">
+                    API
+                </span>
+                <code>/latest</code>
+            </div>
+        </section>
+
+        <section class="sensor-grid">
+            <article
+                class="sensor-card"
+                id="sensor-1-card"
+            >
+                <div class="card-heading">
+                    <div>
+                        <p class="sensor-number">
+                            SENSOR 1
+                        </p>
+                        <h2>SHTC3</h2>
+                    </div>
+
+                    <span
+                        id="sensor-1-slave"
+                        class="badge"
+                    >
+                        Slave --
+                    </span>
+                </div>
+
+                <div class="metric-grid two-column">
+                    <div class="metric">
+                        <span class="metric-label">
+                            Humidity
+                        </span>
+                        <strong
+                            id="sensor-1-humidity"
+                        >
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            %RH
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Temperature
+                        </span>
+                        <strong
+                            id="sensor-1-temperature"
+                        >
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            °C
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span>Baudrate</span>
+                    <strong id="sensor-1-baudrate">
+                        --
+                    </strong>
+                </div>
+            </article>
+
+            <article
+                class="sensor-card"
+                id="sensor-2-card"
+            >
+                <div class="card-heading">
+                    <div>
+                        <p class="sensor-number">
+                            SENSOR 2
+                        </p>
+                        <h2>SHTC3</h2>
+                    </div>
+
+                    <span
+                        id="sensor-2-slave"
+                        class="badge"
+                    >
+                        Slave --
+                    </span>
+                </div>
+
+                <div class="metric-grid two-column">
+                    <div class="metric">
+                        <span class="metric-label">
+                            Humidity
+                        </span>
+                        <strong
+                            id="sensor-2-humidity"
+                        >
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            %RH
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Temperature
+                        </span>
+                        <strong
+                            id="sensor-2-temperature"
+                        >
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            °C
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span>Baudrate</span>
+                    <strong id="sensor-2-baudrate">
+                        --
+                    </strong>
+                </div>
+            </article>
+
+            <article
+                class="sensor-card soil-card"
+                id="sensor-3-card"
+            >
+                <div class="card-heading">
+                    <div>
+                        <p class="sensor-number">
+                            SENSOR 3
+                        </p>
+                        <h2>Soil 7-in-1</h2>
+                    </div>
+
+                    <span
+                        id="sensor-3-slave"
+                        class="badge"
+                    >
+                        Slave --
+                    </span>
+                </div>
+
+                <div class="metric-grid soil-grid">
+                    <div class="metric">
+                        <span class="metric-label">
+                            Moisture
+                        </span>
+                        <strong id="sensor-3-moisture">
+                            --
+                        </strong>
+                        <span class="metric-unit">%</span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Temperature
+                        </span>
+                        <strong id="sensor-3-temperature">
+                            --
+                        </strong>
+                        <span class="metric-unit">°C</span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Conductivity
+                        </span>
+                        <strong id="sensor-3-conductivity">
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            µS/cm
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            pH
+                        </span>
+                        <strong id="sensor-3-ph">
+                            --
+                        </strong>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Nitrogen
+                        </span>
+                        <strong id="sensor-3-nitrogen">
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            mg/kg
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Phosphate
+                        </span>
+                        <strong id="sensor-3-phosphate">
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            mg/kg
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Potassium
+                        </span>
+                        <strong id="sensor-3-potassium">
+                            --
+                        </strong>
+                        <span class="metric-unit">
+                            mg/kg
+                        </span>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            Salinity
+                        </span>
+                        <strong id="sensor-3-salinity">
+                            --
+                        </strong>
+                    </div>
+
+                    <div class="metric">
+                        <span class="metric-label">
+                            TDS
+                        </span>
+                        <strong id="sensor-3-tds">
+                            --
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <span>Baudrate</span>
+                    <strong id="sensor-3-baudrate">
+                        --
+                    </strong>
+                </div>
+            </article>
+        </section>
+
+
+        <section class="history-card">
+            <div class="section-heading history-heading">
+                <div>
+                    <p class="eyebrow">SQLITE HISTORY</p>
+                    <h2>Historical Sensor Chart</h2>
+                </div>
+
+                <div class="history-controls">
+                    <label>
+                        Sensor
+                        <select id="history-sensor">
+                            <option value="1">Sensor 1</option>
+                            <option value="2">Sensor 2</option>
+                            <option value="3">Sensor 3</option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Metric
+                        <select id="history-metric"></select>
+                    </label>
+
+                    <label>
+                        Samples
+                        <select id="history-limit">
+                            <option value="30">30</option>
+                            <option value="60" selected>60</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                        </select>
+                    </label>
+
+                    <button id="history-refresh" type="button">
+                        REFRESH HISTORY
+                    </button>
+                </div>
+            </div>
+
+            <div class="chart-shell">
+                <canvas
+                    id="history-chart"
+                    aria-label="Sensor history chart"
+                ></canvas>
+            </div>
+
+            <div class="history-meta">
+                <span id="history-status">
+                    Loading history...
+                </span>
+                <span id="history-range">--</span>
+            </div>
+        </section>
+
+        <section class="frames-card">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">
+                        MODBUS RTU
+                    </p>
+                    <h2>Latest TX / RX Frames</h2>
+                </div>
+            </div>
+
+            <div class="frames-grid">
+                <div class="frame-item">
+                    <h3>Sensor 1</h3>
+                    <p>
+                        <span>TX</span>
+                        <code id="sensor-1-tx">--</code>
+                    </p>
+                    <p>
+                        <span>RX</span>
+                        <code id="sensor-1-rx">--</code>
+                    </p>
+                </div>
+
+                <div class="frame-item">
+                    <h3>Sensor 2</h3>
+                    <p>
+                        <span>TX</span>
+                        <code id="sensor-2-tx">--</code>
+                    </p>
+                    <p>
+                        <span>RX</span>
+                        <code id="sensor-2-rx">--</code>
+                    </p>
+                </div>
+
+                <div class="frame-item">
+                    <h3>Sensor 3</h3>
+                    <p>
+                        <span>TX</span>
+                        <code id="sensor-3-tx">--</code>
+                    </p>
+                    <p>
+                        <span>RX</span>
+                        <code id="sensor-3-rx">--</code>
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script
+        src="{{ url_for('static', filename='dashboard.js') }}"
+    ></script>
+</body>
+</html>
